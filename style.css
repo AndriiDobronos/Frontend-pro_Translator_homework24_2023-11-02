@@ -1,0 +1,11 @@
+select  {
+    margin-bottom: 50px;
+}
+.months-translates {
+
+    border: 1px solid black;
+}
+td {
+    width: 85px;
+    border: 1px solid black;
+}
