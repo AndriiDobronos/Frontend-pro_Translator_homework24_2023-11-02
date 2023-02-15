@@ -65,74 +65,96 @@
      назвами місяців на вибраних мовах
 
  */
-const languages = ["Італійська","УкраЇнська","Англійська","Німецька"]
-const locale = ['IT','ukr-UA','en-EN','de-DE']
-const selectedId1 =['','selected','','','']
-const selectedId2 =['','','selected','','']
+const languages = ["УкраЇнська","Англійська","Італійська","Німецька"]
+const locale = ['ukr-UA','en-EN','IT','de-DE']
+const arrErrors = []
 
-let allOptions1 = ``
-for (let j = 0 ; j < languages.length ; j++) {
-    allOptions1 += `<option value="${locale[j]}" ${selectedId1[j]}>${languages[j]}</option>\n`
-}
-const select1 = document.querySelector('.language-from')
-select1.innerHTML =  allOptions1
-
-let allOptions2 = ``
-for (let j = 0 ; j < languages.length ; j++) {
-    allOptions2 += `<option value="${locale[j]}" ${selectedId2[j]}>${languages[j]}</option>\n`
-}
-const select2 = document.querySelector('.language-to')
-select2.innerHTML = allOptions2
-
-let locale1 = 'ukr-UA'
-let locale2 = 'en-EN'
-function createTable() {
-    let allTr = ''
-    for (let k = 0; k < 12 ; k++) {
-        const date = new Date(Date.UTC(2022, k));
-        const options = {month: 'long'};
-        allTr += ` <tr>\n` +
-            `            <td>${date.toLocaleString(locale1, options)}</td>\n` +
-            `            <td>${date.toLocaleString(locale2, options)}</td>\n` +
-            `          </tr>\n `
+for (let p = 0; p < languages.length ; p++) {
+    if(languages[p] === "" || !isNaN(+languages[p])) {
+        arrErrors.push(languages[p])
     }
-    const table = document.querySelector('.months-translates')
-    table.innerHTML = allTr
-}
-createTable()
-
-select1.onchange = function() {
-    for (let i = 0; i < languages.length; i++) {
-        if (select1[i].selected) {
-            locale1 = select1[i].value
-            if(locale1 === locale2 && i < 3) {
-                select2[i].selected = false
-                select2[i+1].selected = true
-                locale2 = select1[i+1].value
-            }else if(locale1 === locale2 && i === 3){
-                select2[i].selected = false
-                select2[i-1].selected = true
-                locale2 = select2[i-1].value
-            }
-        }
+    if(locale[p] === "" || !isNaN(+locale[p])) {
+        arrErrors.push(locale[p])
     }
-   createTable()
 }
+if (languages.length >= 2 && locale.length >= languages.length &&
+arrErrors.length === 0) {
 
-select2.addEventListener('change',function () {
-    for (let l = 0; l < languages.length; l++) {
-        if (select2[l].selected){
-            locale2 = select2[l].value
-            if(locale1 === locale2 && l < 3) {
-                select1[l].selected = false
-                select1[l+1].selected = true
-                locale1 = select1[l+1].value
-            }else if(locale1 === locale2 && l === 3){
-                select1[l].selected = false
-                select1[l-1].selected = true
-                locale1 = select1[l-1].value
+    function createAllOptions(position){
+        let allOptions = ``
+        for (let j = 0 ; j < languages.length ; j++) {
+            let isSelected = ''
+            if (j === position) {
+                isSelected = 'selected'
             }
+            allOptions += `<option value="${locale[j]}" ${isSelected}>${languages[j]}</option>\n`
         }
+        return allOptions
+    }
+    const select1 = document.querySelector('.language-from')
+    select1.innerHTML = createAllOptions(0)
+
+    const select2 = document.querySelector('.language-to')
+    select2.innerHTML = createAllOptions(1)
+
+    let locale1 = 'ukr-UA'
+    let locale2 = 'en-EN'
+    function createTable() {
+        let allTr = ''
+        for (let k = 0; k < 12 ; k++) {
+            const date = new Date(Date.UTC(2022, k));
+            const options = {month: 'long'};
+            allTr += ` <tr>\n` +
+                `            <td>${date.toLocaleString(locale1, options)}</td>\n` +
+                `            <td>${date.toLocaleString(locale2, options)}</td>\n` +
+                `          </tr>\n `
+        }
+        const table = document.querySelector('.months-translates')
+        table.innerHTML = allTr
     }
     createTable()
-})
+
+    select1.onchange = function() {
+        for (let i = 0; i < languages.length; i++) {
+            if (select1[i].selected) {
+                locale1 = select1[i].value
+                if(locale1 === locale2 && i < (languages.length - 1)) {
+                    select2[i].selected = false
+                    select2[i+1].selected = true
+                    locale2 = select1[i+1].value
+                }else if(locale1 === locale2 && i === (languages.length - 1)) {
+                    select2[i].selected = false
+                    select2[i-1].selected = true
+                    locale2 = select2[i-1].value
+                }
+            }
+        }
+        createTable()
+    }
+
+    select2.addEventListener('change',function () {
+        for (let l = 0; l < languages.length; l++) {
+            if (select2[l].selected){
+                locale2 = select2[l].value
+                if(locale1 === locale2 && l < (languages.length - 1)) {
+                    select1[l].selected = false
+                    select1[l+1].selected = true
+                    locale1 = select1[l+1].value
+                }else if(locale1 === locale2 && l === (languages.length - 1)){
+                    select1[l].selected = false
+                    select1[l-1].selected = true
+                    locale1 = select1[l-1].value
+                }
+            }
+        }
+        createTable()
+    })
+} else {
+    alert('Inputted data is invalid')
+}
+
+
+
+
+
+
